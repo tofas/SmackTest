@@ -7,17 +7,19 @@ import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import javax.inject.Inject;
+
+import dani.com.smacktest.TestSmackApplication;
+
 /**
  * Created by flamingo on 16/3/16.
  */
 public class TestService extends Service {
 
     public static ConnectivityManager connectivityManager;
-    public static TestXMPP xmpp;
 
-    private static final String DOMAIN = "xmpp.jp";
-    private static final String USERNAME = "khushi";
-    private static final String PASSWORD = "password";
+    @Inject
+    TestXMPP xmpp;
 
     @Nullable
     @Override
@@ -29,7 +31,7 @@ public class TestService extends Service {
     public void onCreate() {
         super.onCreate();
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        xmpp = TestXMPP.getInstance(this, DOMAIN, USERNAME, PASSWORD);
+        ((TestSmackApplication) getApplication()).getXMPPComponent().inject(this);
         xmpp.connect();
     }
 
@@ -47,7 +49,7 @@ public class TestService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        xmpp.connection.disconnect();
+        xmpp.disconnect();
     }
 
     public static boolean isNetworkConnected() {

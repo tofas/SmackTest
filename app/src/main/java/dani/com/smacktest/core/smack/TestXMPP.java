@@ -12,33 +12,33 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 
-import android.app.Service;
-
 import java.io.IOException;
 
-import dani.com.smacktest.core.events.XmppEvent;
+import dani.com.smacktest.core.events.AuthenticationEvent;
+import dani.com.smacktest.core.events.ConnectionEvent;
+import dani.com.smacktest.core.events.ErrorEvent;
 
 /**
  * Created by flamingo on 16/3/16.
  */
 public class TestXMPP implements ConnectionListener {
 
+    public static final String TAG = "TestXmpp";
+
     private final String serverAddress;
     private final String loginUser;
     private final String passwordUser;
-    private final Service context;
     public static XMPPTCPConnection connection;
     private Gson gson;
 
-    public static TestXMPP getInstance(TestService context, String serverAddress, String loginUser, String passwordUser) {
-        return new TestXMPP(context, serverAddress, loginUser, passwordUser);
+    public static TestXMPP getInstance(String serverAddress, String loginUser, String passwordUser) {
+        return new TestXMPP(serverAddress, loginUser, passwordUser);
     }
 
-    public TestXMPP(TestService context, String serverAddress, String loginUser, String passwordUser) {
+    public TestXMPP(String serverAddress, String loginUser, String passwordUser) {
         this.serverAddress = serverAddress;
         this.loginUser = loginUser;
         this.passwordUser = passwordUser;
-        this.context = context;
         EventBus.getDefault().register(this);
         init();
     }
@@ -72,19 +72,19 @@ public class TestXMPP implements ConnectionListener {
             DeliveryReceiptManager dm = DeliveryReceiptManager
                     .getInstanceFor(connection);
             dm.setAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.always);
+
         } catch (SmackException e) {
-            EventBus.getDefault().post(new XmppEvent(e.getMessage()));
+            EventBus.getDefault().post(new ErrorEvent(TAG, e.getMessage()));
         } catch (IOException e) {
-            EventBus.getDefault().post(new XmppEvent(e.getMessage()));
+            EventBus.getDefault().post(new ErrorEvent(TAG, e.getMessage()));
         } catch (XMPPException e) {
-            EventBus.getDefault().post(new XmppEvent(e.getMessage()));
+            EventBus.getDefault().post(new ErrorEvent(TAG, e.getMessage()));
         }
     }
 
     public void login() {
         try {
             connection.login(loginUser, passwordUser);
-
         } catch (XMPPException | SmackException | IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -100,22 +100,25 @@ public class TestXMPP implements ConnectionListener {
 
     @Override
     public void authenticated(XMPPConnection connection, boolean resumed) {
-
+        if(connection.isAuthenticated())
+            EventBus.getDefault().post(new AuthenticationEvent(TAG, resumed));
+        else
+            EventBus.getDefault().post(new ErrorEvent(TAG, "Login: FAIL"));
     }
 
     @Override
     public void connectionClosed() {
-
+        EventBus.getDefault().post(new ErrorEvent(TAG, "Connection: CLOSED"));
     }
 
     @Override
     public void connectionClosedOnError(Exception e) {
-
+        EventBus.getDefault().post(new ErrorEvent(TAG, e.getMessage()));
     }
 
     @Override
     public void reconnectionSuccessful() {
-
+        EventBus.getDefault().post(new ConnectionEvent(TAG));
     }
 
     @Override
@@ -125,6 +128,6 @@ public class TestXMPP implements ConnectionListener {
 
     @Override
     public void reconnectionFailed(Exception e) {
-
+        EventBus.getDefault().post(new ErrorEvent(TAG, "Reconnection: FAILED"));
     }
 }
