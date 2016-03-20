@@ -1,15 +1,15 @@
 package dani.com.smacktest.features.start;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import dani.com.smacktest.R;
+import dani.com.smacktest.core.base.BaseActivity;
+import dani.com.smacktest.features.start.splash.SplashView;
 
-public class StartActivity extends AppCompatActivity {
+public class StartActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
+        loadFragment(SplashView.newInstance());
     }
 }
