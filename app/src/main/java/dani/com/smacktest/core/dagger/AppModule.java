@@ -1,6 +1,8 @@
 package dani.com.smacktest.core.dagger;
 
-import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import javax.inject.Singleton;
 
@@ -13,15 +15,17 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    Application mApplication;
+    Context context;
 
-    public AppModule(Application application) {
-        mApplication = application;
+    public AppModule(Context context) {
+        this.context = context;
     }
 
+    // Dagger will only look for methods annotated with @Provides
     @Provides
     @Singleton
-    Application providesApplication() {
-        return mApplication;
+    // Application reference must come from AppModule.class
+    SharedPreferences providesSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 }

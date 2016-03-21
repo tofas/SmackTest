@@ -14,7 +14,7 @@ import dani.com.smacktest.core.smack.TestXMPP;
  * Created by flamingo on 17/3/16.
  */
 @Singleton
-@Component(modules={AppModule.class, XMPPModule.class})
+@Component(modules={XMPPModule.class})
 public interface XMPPComponent {
     void inject(TestService service);
 }

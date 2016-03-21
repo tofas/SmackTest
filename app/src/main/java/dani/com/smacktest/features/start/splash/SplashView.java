@@ -6,6 +6,7 @@ import android.view.View;
 
 import dani.com.smacktest.R;
 import dani.com.smacktest.core.base.BaseView;
+import dani.com.smacktest.features.start.StartNavigationInterface;
 
 /**
  * Created by flamingo on 20/3/16.
@@ -14,6 +15,7 @@ public class SplashView extends BaseView {
 
     private static SplashView instance;
     private SplashPresenter presenter;
+    private StartNavigationInterface navigationListener;
 
     public static SplashView newInstance() {
         if(instance == null) instance = new SplashView();
@@ -27,7 +29,8 @@ public class SplashView extends BaseView {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        presenter = SplashPresenter.getInstance();
+        presenter = SplashPresenter.getInstance(this);
+        navigationListener = (StartNavigationInterface) getActivity();
     }
 
     @Override
@@ -40,5 +43,13 @@ public class SplashView extends BaseView {
     @Override
     protected int getFragmentLayout() {
         return R.layout.splash_view;
+    }
+
+    public void navigateToLogin() {
+        navigationListener.onNotSignedIn();
+    }
+
+    public void navigateToChat() {
+        navigationListener.onSingedIn();
     }
 }

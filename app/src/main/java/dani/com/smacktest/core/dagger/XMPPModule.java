@@ -1,5 +1,9 @@
 package dani.com.smacktest.core.dagger;
 
+import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import javax.inject.Singleton;
 
 import dagger.Module;

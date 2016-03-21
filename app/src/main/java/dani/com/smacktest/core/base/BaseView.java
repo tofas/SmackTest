@@ -1,7 +1,6 @@
 package dani.com.smacktest.core.base;
 
-import com.tfg.dani.tfg.R;
-
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -11,7 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
+import dani.com.smacktest.R;
+import dani.com.smacktest.TestSmackApplication;
 
 /**
  * Created by dani on 31/10/15.
@@ -21,6 +24,9 @@ public abstract class BaseView extends Fragment implements BaseViewInterface {
     private View view;
     private View inflated;
 
+    @Inject
+    SharedPreferences preferences;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -29,6 +35,8 @@ public abstract class BaseView extends Fragment implements BaseViewInterface {
         view = inflater.inflate(R.layout.fragment_base, container, false);
         setFragmentContent(getFragmentLayout());
         injectViews(view);
+
+        ((TestSmackApplication)getActivity().getApplication()).getAppComponent().inject(this);
 
         return view;
     }
@@ -54,6 +62,11 @@ public abstract class BaseView extends Fragment implements BaseViewInterface {
     @Override
     public void hideLoading() {
 
+    }
+
+    @Override
+    public SharedPreferences getSharedPreferences() {
+        return preferences;
     }
 
     @Override

@@ -43,4 +43,6 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile 'com.jakewharton:butterknife:7.0.1'
+
+    compile 'com.android.support:design:23.0.0'
 }
