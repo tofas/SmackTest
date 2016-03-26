@@ -17,7 +17,7 @@ import dani.com.smacktest.core.smack.TestXMPP;
 @Module
 public class XMPPModule {
 
-    private String serverAddress = "xmpp.jp";
+    private String serverAddress = "https://adastra.re";
     private String loginUser;
     private String passwordUser;
 

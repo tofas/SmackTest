@@ -12,11 +12,16 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 
+import android.os.AsyncTask;
+
 import java.io.IOException;
 
 import dani.com.smacktest.core.events.AuthenticationEvent;
 import dani.com.smacktest.core.events.ConnectionEvent;
 import dani.com.smacktest.core.events.ErrorEvent;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by flamingo on 16/3/16.
@@ -31,7 +36,8 @@ public class TestXMPP implements ConnectionListener {
     public static XMPPTCPConnection connection;
     private Gson gson;
 
-    public static TestXMPP getInstance(String serverAddress, String loginUser, String passwordUser) {
+    public static TestXMPP getInstance(String serverAddress, String loginUser,
+            String passwordUser) {
         return new TestXMPP(serverAddress, loginUser, passwordUser);
     }
 
@@ -39,7 +45,6 @@ public class TestXMPP implements ConnectionListener {
         this.serverAddress = serverAddress;
         this.loginUser = loginUser;
         this.passwordUser = passwordUser;
-        EventBus.getDefault().register(this);
         init();
     }
 
@@ -54,7 +59,6 @@ public class TestXMPP implements ConnectionListener {
         config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
         config.setServiceName(serverAddress);
         config.setHost(serverAddress);
-        config.setPort(5222);
         config.setDebuggerEnabled(true);
         XMPPTCPConnection.setUseStreamManagementResumptiodDefault(true);
         XMPPTCPConnection.setUseStreamManagementDefault(true);
@@ -67,11 +71,27 @@ public class TestXMPP implements ConnectionListener {
     }
 
     public void connect() {
+
+        connectXMPPObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(Schedulers.io())
+                .subscribe(isConnected -> EventBus.getDefault()
+                        .post(new ErrorEvent(TAG, isConnected?"Connection: CONNECTING...":"Connection: ERROR")));
+    }
+
+    private Observable<Boolean> connectXMPPObservable() {
+        return Observable.just(connectXMPP());
+    }
+
+    private boolean connectXMPP() {
         try {
             connection.connect();
             DeliveryReceiptManager dm = DeliveryReceiptManager
                     .getInstanceFor(connection);
             dm.setAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.always);
+
+            return true;
 
         } catch (SmackException e) {
             EventBus.getDefault().post(new ErrorEvent(TAG, e.getMessage()));
@@ -80,6 +100,8 @@ public class TestXMPP implements ConnectionListener {
         } catch (XMPPException e) {
             EventBus.getDefault().post(new ErrorEvent(TAG, e.getMessage()));
         }
+
+        return false;
     }
 
     public void login() {
@@ -100,10 +122,11 @@ public class TestXMPP implements ConnectionListener {
 
     @Override
     public void authenticated(XMPPConnection connection, boolean resumed) {
-        if(connection.isAuthenticated())
+        if (connection.isAuthenticated()) {
             EventBus.getDefault().post(new AuthenticationEvent(TAG, resumed));
-        else
+        } else {
             EventBus.getDefault().post(new ErrorEvent(TAG, "Login: FAIL"));
+        }
     }
 
     @Override

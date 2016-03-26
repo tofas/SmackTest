@@ -1,15 +1,21 @@
 package dani.com.smacktest.core.smack;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import javax.inject.Inject;
 
 import dani.com.smacktest.TestSmackApplication;
+import dani.com.smacktest.core.events.ConnectionEvent;
+import dani.com.smacktest.core.events.ErrorEvent;
 
 /**
  * Created by flamingo on 16/3/16.
@@ -32,6 +38,7 @@ public class TestService extends Service {
         super.onCreate();
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         ((TestSmackApplication) getApplication()).getXMPPComponent().inject(this);
+        EventBus.getDefault().register(this);
         xmpp.connect();
     }
 
@@ -54,5 +61,15 @@ public class TestService extends Service {
 
     public static boolean isNetworkConnected() {
         return connectivityManager.getActiveNetworkInfo() != null;
+    }
+
+    @Subscribe
+    public void onXMPPMessageReceived(ConnectionEvent event) {
+        event.print();
+    }
+
+    @Subscribe
+    public void onErrorMessageReceived(ErrorEvent event) {
+        event.print();
     }
 }
