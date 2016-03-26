@@ -12,6 +12,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [HOCKEYAPP_APP_ID: "6265f12976c24609b629f75af648ddd2"]
     }
 
     buildTypes {
@@ -56,4 +57,6 @@ dependencies {
 // Because RxAndroid releases are few and far between, it is recommended you also
 // explicitly depend on RxJava's latest version for bug fixes and new features.
     compile 'io.reactivex:rxjava:1.1.0'
+
+    compile 'net.hockeyapp.android:HockeySDK:3.7.1'
 }
