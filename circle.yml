@@ -16,4 +16,5 @@ deployment:
 test:
   override:
     - ./gradlew assembleRelease
-    - cp -r SmackTest/app/build/outputs $CIRCLE_ARTIFACTS
+    - ls
+    - cp -r ./app/build/outputs $CIRCLE_ARTIFACTS
