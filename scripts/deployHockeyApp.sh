@@ -30,10 +30,7 @@
 # release_type=2    # beta
 # X-HockeyAppToken: token of app owner
 
-function uploadToHockeyApp {
-
-  ls
-
+function uploadToHockeyApp() {
   GIT_COMPARE_KEY=${CIRCLE_COMPARE_URL##*/}
   GIT_PRETTY_COMMIT_LOG=$(echo "<ul>$(git log ${GIT_COMPARE_KEY} --pretty=format:'<li>[%ad] %s (%an)</li>' --date=short)</ul>" | tr -d '\n')
 
@@ -50,8 +47,8 @@ function uploadToHockeyApp {
        --form "notify=1" \
        --form "platform=Android" \
        --form "notes_type=0" \
-       --form "ipa=@${HOCKEYAPP_EXPORT_APK_PATH}" \
-       --form "release_type=2" \
+       --form "ipa=@$2" \
+       --form "release_type=$1" \
        --header "X-HockeyAppToken: ${HOCKEYAPP_TOKEN}" \
        "https://upload.hockeyapp.net/api/2/apps/${HOCKEYAPP_APP_IDENTIFIER}/app_versions/upload"
 }
