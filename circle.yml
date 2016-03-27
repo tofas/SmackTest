@@ -15,6 +15,6 @@ deployment:
 
 test:
   override:
-    - ./gradlew assembleRelease
+    - ./gradlew assembleDebug
     - ls
     - cp -r ./app/build/outputs $CIRCLE_ARTIFACTS
