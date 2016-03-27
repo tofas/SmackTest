@@ -12,3 +12,8 @@ deployment:
     branch: master
     commands:
       - source scripts/deployHockeyApp.sh && uploadToHockeyApp
+
+test:
+  override:
+    - ./gradlew assembleRelease
+    - cp -r SmackTest/app/build/outputs $CIRCLE_ARTIFACTS
