@@ -19,9 +19,9 @@ deployment:
     branch: master
     commands:
       - ./gradlew assembleRelease
-      - source scripts/deployHockeyApp.sh "0" $HOCKEYAPP_EXPORT_APK_PATH_PROD && uploadToHockeyApp
+      - source scripts/deployHockeyApp.sh && uploadToHockeyApp "0" $HOCKEYAPP_EXPORT_APK_PATH_PROD
   development:
     branch: develop
     commands:
-      - source scripts/deployHockeyApp.sh "2" $HOCKEYAPP_EXPORT_APK_PATH_DEV && uploadToHockeyApp
+      - source scripts/deployHockeyApp.sh && uploadToHockeyApp "2" $HOCKEYAPP_EXPORT_APK_PATH_DEV
 
